@@ -31,14 +31,11 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
   
-import distribute_setup
-distribute_setup.use_setuptools()
-
 from setuptools import setup;
 
 setup(
     name="stagger",
-    version="0.4.2",
+    version="0.4.3",
     url="http://code.google.com/p/stagger",
     author="Karoly Lorentey",
     author_email="karoly@lorentey.hu",
