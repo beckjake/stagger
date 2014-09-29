@@ -5,19 +5,19 @@
 #
 # Copyright (c) 2009-2011 Karoly Lorentey  <karoly@lorentey.hu>
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
 # are met:
-# 
+#
 # - Redistributions of source code must retain the above copyright
 #   notice, this list of conditions and the following disclaimer.
-# 
+#
 # - Redistributions in binary form must reproduce the above copyright
 #   notice, this list of conditions and the following disclaimer in
 #   the documentation and/or other materials provided with the
 #   distribution.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -35,7 +35,7 @@
 
 # This test automatically downloads the ID3v1 test suite by Martin Nilsson,
 # and runs stagger's id3v1 decoder on all 274 test cases, comparing
-# decoded field values to expected values listed in the test suite's 
+# decoded field values to expected values listed in the test suite's
 # generation.log file.
 #
 # Nilsson's tests are rather strict -- stagger intentionally accepts broken
@@ -51,7 +51,7 @@
 #
 # In two test cases, Nilsson uses genre names that differ from most other
 # sources/implementations:
-# 
+#
 #     Test case    Genre #   Genre in test    Genre elsewhere
 #     151          136       Christian        Christian Gangsta Rap
 #     155          140       Contemporary     Contemporary Christian
@@ -83,12 +83,13 @@ def download_testsuite():
         with open(testsuite_file, "rb") as file:
             pass
     except IOError:
-        urllib.request.urlretrieve(testsuite_url, testsuite_file)
-        
+        print("Please go to {!r} and download the file to {!r}".format(testsuite_url, testsuite_file))
+        raise IOError('Test suite not found')
+
 class ID3v1TestCase(unittest.TestCase):
     def parse_log(self):
         log = self.tar.extractfile(testsuite_log)
-        try: 
+        try:
             tests = []
             tag = {}
             for bline in log:
@@ -120,7 +121,7 @@ class ID3v1TestCase(unittest.TestCase):
             return tests
         finally:
             log.close()
-    
+
     def setUp(self):
         download_testsuite()
         self.tar = tarfile.open(testsuite_file)
@@ -144,7 +145,7 @@ class ID3v1TestCase(unittest.TestCase):
                 test["genre"] = '136 (Christian Gangsta Rap)'
             if test["id"] == 155:
                 test["genre"] = '140 (Contemporary Christian)'
-            
+
             filename = 'id3v1/' + test["filename"]
             file = self.tar.extractfile(filename)
             try:
@@ -154,13 +155,13 @@ class ID3v1TestCase(unittest.TestCase):
                     continue
 
                 tag = stagger.id3v1.Tag1.read(file)
-                for field in ["title", "artist", "album", 
+                for field in ["title", "artist", "album",
                               "year", "comment", "track", "genre"]:
                     if field in test:
-                        self.assertEqual(test[field], getattr(tag, field), 
-                                         "Value mismatch in field " + field 
-                                         + " of testcase " + str(test["id"]) 
-                                         + ": '" + test[field] + "' vs '" 
+                        self.assertEqual(test[field], getattr(tag, field),
+                                         "Value mismatch in field " + field
+                                         + " of testcase " + str(test["id"])
+                                         + ": '" + test[field] + "' vs '"
                                          + getattr(tag, field) + "'")
 
                 # Try encoding the tag and comparing binary data
